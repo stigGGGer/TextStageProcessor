@@ -10,9 +10,9 @@ from sources.Word2VecNew.DialogWord2Vec import Ui_Word2VecDialog as DialogWord2V
 from sources.common.plot.TsneMplForWidget import TsneMplForWidget
 from sources.common.plot.PlotMaker import PlotMaker
 
-from sklearn.manifold import TSNE
 import matplotlib
 matplotlib.use('Qt5Agg')
+from sources.Word2VecNew.DimensionReduction import lsa_algorithm, pca_algorithm, tsvd_tsne_algorithms, pca_tsne_algorithm
 
 # # We import seaborn to make nice plots.
 # import seaborn as sns
@@ -55,19 +55,31 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         # Вкладка создание модели
         self.createModelBtn.clicked.connect(self.create_model)
         self.selectAnotherPathBtn.clicked.connect(self.select_another_text)
-        self.retrainModelBtn.clicked.connect(self.retrain_model)
-        self.retrainModelBtn.setVisible(False) # Скрыть кнопку повторной тренировки модели
+        self.recreateModelBtn.clicked.connect(self.recreate_model)
+        self.recreateModelBtn.setVisible(False) # Скрыть кнопку повторной тренировки модели
 
         # Вкладка визуализация модели        
         self.searchQueryGBox.setEnabled(False) # Блокируем элементы до выбора модели
         self.plotVLayout.setEnabled(False) # Блокируем элементы до выбора модели
         self.visualizeBtn.setEnabled(False) # Блокируем элементы до выбора модели
+        # self.tsnePCABtn.setEnabled(False) # Блокируем элементы до выбора модели
+        # self.tsneTSVDBtn.setEnabled(False) # Блокируем элементы до выбора модели
+        # self.tsvdBtn.setEnabled(False) # Блокируем элементы до выбора модели
         self.clearBtn.setEnabled(False) # Блокируем элементы до выбора модели
-        self.visualizeGBox.setHidden(True) # Скрыть box с новыми кнопками
+        # self.visualizeGBox.setHidden(True) # Скрыть box с новыми кнопками
+
+        self.visualizeBtn.clicked.connect(self.visualizeWithAlgorithm)
+        # self.tsnePCABtn.clicked.connect(self.visualiseTSNEPCA)
+        # self.tsneTSVDBtn.clicked.connect(self.visualiseTSNELSA)
+        # self.tsvdBtn.clicked.connect(self.visualiseLSA)
 
         self.selectModelBtn.clicked.connect(self.select_model_file)
-        self.searchQueryBtn.clicked.connect(self.search_word)       
-        self.visualizeBtn.clicked.connect(self.visualise_model)
+        self.showOnPlotBtn.clicked.connect(self.show_word_on_plot)     
+        self.searchQueryBtn.clicked.connect(self.search_word)     
+        self.searchQueryBtn.setAutoDefault(True)  # click on <Enter>
+        self.searchQueryField.returnPressed.connect(self.searchQueryBtn.click)  # click on <Enter>  
+        # self.visualizeBtn.clicked.connect(self.visualiseTSNE)
+        self.topNField.returnPressed.connect(self.searchQueryBtn.click)  # click on <Enter>  
         self.clearBtn.clicked.connect(self.clear_plots_layout)
         self.filePathField.setText(self.filename)        
         if filename.endswith('.model'):
@@ -98,39 +110,63 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
             root_path + 'weight_matrix_epoch' + str(epoch) + '.txt')
         self.createLogTextEdit.append("Данные за эпоху " + str(epoch) + " сохранены по адресу output/Word2Vec")
         
-    def visualise_model(self):
-        # self.visualizeLogTextEdit.append('Алгоритм построения графика запущен. Ждите...')
+    def beforeVisualize(self):
         self.selectModelBtn.setEnabled(False)
-        self.visualizeBtn.setEnabled(False)        
-        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
-        RS = 2500 # Random state
-        tsne = TSNE(n_components=2, perplexity = 40, random_state=RS)
-        result = tsne.fit_transform(X)
-        
-        self.makePlot = PlotMaker(self.plotVLayout, self)
+        self.visualizeBtn.setEnabled(False)
+        # self.tsnePCABtn.setEnabled(False)
+        # self.tsnePCABtn.setEnabled(False)
+        # self.tsvdBtn.setEnabled(False)
 
+    def afterVisualize(self, nameAlgorithm):
+        self.searchQueryGBox.setVisible(True)
+        self.selectModelBtn.setEnabled(True)
+        self.visualizeBtn.setEnabled(True)
+        # self.tsnePCABtn.setEnabled(True)
+        # self.tsneTSVDBtn.setEnabled(True)
+        # self.tsvdBtn.setEnabled(True)
+        self.clearBtn.setEnabled(True)
+        self.visualizeLogTextEdit.append('График алгоритма {0} отображен'.format(nameAlgorithm))
+
+    def drawPlot(self, result):
+        self.makePlot = PlotMaker(self.plotVLayout, self)
         # Создаем toolbar (перенесено в PlotMaker)
         self.makePlot.add_toolbar(self)
-
         ax = self.makePlot.ax
-
-        # # We choose a color palette with seaborn.
-        # palette = np.array(sns.color_palette("hls", 10))
-
-        # We create a scatter plot.
         ax.scatter(result[:, 0], result[:, 1])
         ax.grid(True)
         ax.plot()
         words = list(self.calculator.model.wv.vocab)
         for i, word in enumerate(words):
             ax.annotate(word, xy=(result[i, 0], result[i, 1]))
-                
-        self.searchQueryGBox.setVisible(True)
-        self.selectModelBtn.setEnabled(True)
-        self.visualizeBtn.setEnabled(True)
-        self.clearBtn.setEnabled(True)
-        self.visualizeLogTextEdit.append('График отображен')
 
+    def visualiseTSNEPCA(self):
+        self.beforeVisualize()  
+        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
+        result = pca_tsne_algorithm(X)
+        self.drawPlot(result)                
+        self.afterVisualize("t-SNE со снижением размерности методом PCA")
+
+    def visualisePCA(self):
+        self.beforeVisualize()  
+        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
+        result = pca_algorithm(X, 2)
+        self.drawPlot(result)                
+        self.afterVisualize("PCA")
+    
+    def visualiseTSNELSA(self):
+        self.beforeVisualize()  
+        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
+        result = tsvd_tsne_algorithms(X)
+        self.drawPlot(result)                
+        self.afterVisualize("t-SNE со снижением размерности методом truncated SVD")
+    
+    def visualiseLSA(self):
+        self.beforeVisualize()  
+        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
+        result = lsa_algorithm(X, 2)
+        self.drawPlot(result)                
+        self.afterVisualize("truncated SVD")
+    
     # Очистка области визуализации.
     def clear_plots_layout(self):
         self.makePlot.removePlot()
@@ -143,11 +179,10 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         
         QApplication.restoreOverrideCursor()
         # self.createModelBtn.setEnabled(True)
-        self.retrainModelBtn.setVisible(True) # TODO: Показать кнопку повтора расчетов
+        self.recreateModelBtn.setVisible(True) # TODO: Показать кнопку повтора расчетов
 
         self._log_output_data()
         self.set_enable_visualisation(self.modelFile)
-
         QMessageBox.information(self, "Внимание", "Создание модели завершено")
 
     def create_model(self):
@@ -167,8 +202,8 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         self.setEnabled(False)
         self.profiler.start()
         self.calculator.start()
-    
-    def retrain_model(self):
+
+    def recreate_model(self):
         print("Повторная тренировка модели")
         # self.set_calc_and_signals()
         self.create_model() # TODO: перетренировать модель, а не создать заново
@@ -191,9 +226,10 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         if word == '' or word is None:
             return
         word = self.morph.parse(word)[0].normal_form
+        topNParam = self.topNField.value() if self.topNField.value() != '' else 15
         self.visualizeLogTextEdit.append("Приведение слова к нормальной форме: " + word)
         try:
-            result = self.calculator.search_word(word.lower())
+            result = self.calculator.search_word(word.lower(), topNParam)
             self.visualizeLogTextEdit.append("Поиск слова...")
             self._display_results(word, result)
         except:
@@ -236,5 +272,8 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         self.visualizeLogTextEdit.append('Модель выбрана')
         self.calculator = Word2VecCalculator(modelFile, self.morph, self.configurations)
         self.visualizeBtn.setEnabled(True) # Делаем доступными элементы после выбора модели
+        # self.tsnePCABtn.setEnabled(True) # Делаем доступными элементы после выбора модели
+        # self.tsneTSVDBtn.setEnabled(True) # Делаем доступными элементы после выбора модели
+        # self.tsvdBtn.setEnabled(True) # Делаем доступными элементы после выбора модели
         self.searchQueryGBox.setEnabled(True) # Делаем доступными элементы после выбора модели
         self.plotVLayout.setEnabled(True) # Делаем доступными элементы после выбора модели

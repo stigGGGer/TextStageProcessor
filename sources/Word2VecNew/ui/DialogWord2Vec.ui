@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1119</width>
-    <height>615</height>
+    <width>1043</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,9 +44,9 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="mainAVLaout">
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="font">
@@ -676,9 +676,9 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="retrainModelBtn">
+              <widget class="QPushButton" name="recreateModelBtn">
                <property name="text">
-                <string>Переобучить модель</string>
+                <string>Пересоздать модель</string>
                </property>
               </widget>
              </item>
@@ -776,7 +776,7 @@
                     </property>
                     <property name="minimumSize">
                      <size>
-                      <width>0</width>
+                      <width>348</width>
                       <height>30</height>
                      </size>
                     </property>
@@ -815,7 +815,7 @@
              <item>
               <widget class="QGroupBox" name="visualizeGBox">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -825,7 +825,7 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
+                 <width>500</width>
                  <height>63</height>
                 </size>
                </property>
@@ -836,14 +836,17 @@
                 </size>
                </property>
                <property name="title">
-                <string>Визуализировать</string>
+                <string>Визуализировать алгоритмами</string>
                </property>
                <layout class="QHBoxLayout" name="btnHLayout">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetFixedSize</enum>
                 </property>
                 <item>
-                 <widget class="QPushButton" name="tsneBtn">
+                 <widget class="QPushButton" name="tsneTSVDBtn">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -852,17 +855,17 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>0</width>
+                    <width>100</width>
                     <height>30</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>Алгоритм t-SNE</string>
+                   <string>PCA и t-SNE</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="tsnePDABtn">
+                 <widget class="QPushButton" name="tsnePCABtn">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -871,17 +874,17 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>0</width>
+                    <width>161</width>
                     <height>30</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>Алгоритм PDA и t-SNE</string>
+                   <string> TruncatedSVD и t-SNE</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pdaBtn">
+                 <widget class="QPushButton" name="tsvdBtn">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -890,12 +893,31 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>0</width>
+                    <width>106</width>
                     <height>30</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>Алгоритм PDA</string>
+                   <string> TruncatedSVD</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pcaBtn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>95</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>PCA</string>
                   </property>
                  </widget>
                 </item>
@@ -904,13 +926,6 @@
              </item>
              <item>
               <layout class="QHBoxLayout" name="plotBtnHLayout">
-               <item>
-                <widget class="QPushButton" name="visualizeBtn">
-                 <property name="text">
-                  <string>Визуализировать t-SNE</string>
-                 </property>
-                </widget>
-               </item>
                <item>
                 <widget class="QPushButton" name="clearBtn">
                  <property name="text">
@@ -993,13 +1008,13 @@
                <property name="minimumSize">
                 <size>
                  <width>300</width>
-                 <height>80</height>
+                 <height>110</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
-                 <height>65</height>
+                 <height>16777215</height>
                 </size>
                </property>
                <property name="title">
@@ -1025,6 +1040,48 @@
                  <number>9</number>
                 </property>
                 <item>
+                 <layout class="QHBoxLayout" name="topNHLayout">
+                  <property name="sizeConstraint">
+                   <enum>QLayout::SetMinimumSize</enum>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="topNLbl">
+                    <property name="text">
+                     <string>Количество похожих слов в выборке (top n)</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="topNField">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>110</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>150</number>
+                    </property>
+                    <property name="value">
+                     <number>15</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
                  <layout class="QHBoxLayout" name="searchQueryHLayout">
                   <item>
                    <widget class="QLineEdit" name="searchQueryField">
@@ -1046,6 +1103,19 @@
                     </property>
                     <property name="text">
                      <string>Найти</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="showOnPlotBtn">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Показать на графике</string>
                     </property>
                    </widget>
                   </item>
@@ -1088,9 +1158,6 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>tabWidget</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>
