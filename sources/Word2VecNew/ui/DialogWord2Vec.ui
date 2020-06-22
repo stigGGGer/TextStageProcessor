@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1043</width>
-    <height>580</height>
+    <width>1027</width>
+    <height>614</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -813,6 +813,9 @@
               </widget>
              </item>
              <item>
+              <layout class="QHBoxLayout" name="plotBtnHLayout"/>
+             </item>
+             <item>
               <widget class="QGroupBox" name="visualizeGBox">
                <property name="enabled">
                 <bool>true</bool>
@@ -836,46 +839,46 @@
                 </size>
                </property>
                <property name="title">
-                <string>Визуализировать алгоритмами</string>
+                <string>Алгоритмы визуализации</string>
                </property>
                <layout class="QHBoxLayout" name="btnHLayout">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetFixedSize</enum>
                 </property>
                 <item>
-                 <widget class="QPushButton" name="tsneTSVDBtn">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                 <widget class="QRadioButton" name="pcaTSNERadioBtn">
                   <property name="minimumSize">
                    <size>
-                    <width>100</width>
+                    <width>120</width>
                     <height>30</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="text">
                    <string>PCA и t-SNE</string>
                   </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="tsnePCABtn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                 <widget class="QRadioButton" name="tsvdTSNERadioBtn">
                   <property name="minimumSize">
                    <size>
-                    <width>161</width>
+                    <width>178</width>
                     <height>30</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="text">
@@ -884,36 +887,39 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="tsvdBtn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                 <widget class="QRadioButton" name="tsvdRadioBtn">
                   <property name="minimumSize">
                    <size>
-                    <width>106</width>
+                    <width>120</width>
                     <height>30</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>110</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="text">
                    <string> TruncatedSVD</string>
                   </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pcaBtn">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                 <widget class="QRadioButton" name="pcaRadioBtn">
                   <property name="minimumSize">
                    <size>
-                    <width>95</width>
+                    <width>60</width>
                     <height>30</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="text">
@@ -925,7 +931,50 @@
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="plotBtnHLayout">
+              <layout class="QHBoxLayout" name="searchOnlyHLayout">
+               <item>
+                <widget class="QCheckBox" name="searchOnlyCheck">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Отобразить только результаты поиска</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="searchOnlyHSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="visualizeBtnHLayout">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="sizeConstraint">
+                <enum>QLayout::SetMaximumSize</enum>
+               </property>
+               <item>
+                <widget class="QPushButton" name="visualizeBtn">
+                 <property name="text">
+                  <string>Визуализировать</string>
+                 </property>
+                </widget>
+               </item>
                <item>
                 <widget class="QPushButton" name="clearBtn">
                  <property name="text">
@@ -1103,19 +1152,6 @@
                     </property>
                     <property name="text">
                      <string>Найти</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="showOnPlotBtn">
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>30</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Показать на графике</string>
                     </property>
                    </widget>
                   </item>
