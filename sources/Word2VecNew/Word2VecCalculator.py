@@ -61,8 +61,8 @@ class Word2VecCalculator(QThread):
         sentences = bigram[data]
         self.model.build_vocab(sentences, progress_per=10000)
         self.signals.PrintInfo.emit('Словарь Word2Vec создан.')
-        self.signals.PrintInfo.emit('Тренируем модель Word2Vec {0} эпох.'.format(self.iter + 10))
-        self.model.train(sentences, total_examples=self.model.corpus_count, epochs=self.iter + 10, report_delay=1)
+        self.signals.PrintInfo.emit('Тренируем модель Word2Vec {0} эпох.'.format(self.iter))
+        self.model.train(sentences, total_examples=self.model.corpus_count, epochs=self.iter, report_delay=1)
         self.signals.PrintInfo.emit('Модель Word2Vec прошла обучение.')
         self.model.callbacks = ()
         self.signals.PrintInfo.emit('Расчеты закончены!')
