@@ -50,7 +50,6 @@ class MainWindow(QMainWindow):
         self.initUI()
         self.texts = []
 
-
     def initUI(self):
         button_clasterization = QPushButton("Кластеризация")
         button_clasterization.setMinimumHeight(32)
