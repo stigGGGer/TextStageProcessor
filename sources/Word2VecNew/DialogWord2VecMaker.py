@@ -62,24 +62,16 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         self.searchQueryGBox.setEnabled(False) # Блокируем элементы до выбора модели
         self.plotVLayout.setEnabled(False) # Блокируем элементы до выбора модели
         self.visualizeBtn.setEnabled(False) # Блокируем элементы до выбора модели
-        # self.tsnePCABtn.setEnabled(False) # Блокируем элементы до выбора модели
-        # self.tsneTSVDBtn.setEnabled(False) # Блокируем элементы до выбора модели
-        # self.tsvdBtn.setEnabled(False) # Блокируем элементы до выбора модели
         self.clearBtn.setEnabled(False) # Блокируем элементы до выбора модели
-        # self.visualizeGBox.setHidden(True) # Скрыть box с новыми кнопками
 
         self.visualizeBtn.clicked.connect(self.visualizeWithAlgorithm)
-        # self.tsnePCABtn.clicked.connect(self.visualiseTSNEPCA)
-        # self.tsneTSVDBtn.clicked.connect(self.visualiseTSNELSA)
-        # self.tsvdBtn.clicked.connect(self.visualiseLSA)
 
-        self.selectModelBtn.clicked.connect(self.select_model_file)
-        self.showOnPlotBtn.clicked.connect(self.show_word_on_plot)     
+        self.selectModelBtn.clicked.connect(self.select_model_file) 
         self.searchQueryBtn.clicked.connect(self.search_word)     
         self.searchQueryBtn.setAutoDefault(True)  # click on <Enter>
         self.searchQueryField.returnPressed.connect(self.searchQueryBtn.click)  # click on <Enter>  
         # self.visualizeBtn.clicked.connect(self.visualiseTSNE)
-        self.topNField.returnPressed.connect(self.searchQueryBtn.click)  # click on <Enter>  
+        # self.topNField.returnPressed.connect(self.searchQueryBtn.click)  # click on <Enter>  
         self.clearBtn.clicked.connect(self.clear_plots_layout)
         self.filePathField.setText(self.filename)        
         if filename.endswith('.model'):
@@ -90,10 +82,7 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         self.calculator.signals.Finished.connect(self.on_calculation_finish)
         self.calculator.signals.PrintInfo.connect(self.on_text_log_add)
         self.calculator.signals.Progress.connect(self.on_model_epoch_end)
-        self.calculator.signals.ProgressBar.connect(self.on_progress)
-        # self.output_dir = self.configurations.get(
-        #     "output_files_directory", "output_files") + '/Word2Vec/'
-        
+        self.calculator.signals.ProgressBar.connect(self.on_progress)        
         print("Настройки калькулятора и сигналов заданы")
 
     def on_progress(self, value):
@@ -113,17 +102,11 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
     def beforeVisualize(self):
         self.selectModelBtn.setEnabled(False)
         self.visualizeBtn.setEnabled(False)
-        # self.tsnePCABtn.setEnabled(False)
-        # self.tsnePCABtn.setEnabled(False)
-        # self.tsvdBtn.setEnabled(False)
 
     def afterVisualize(self, nameAlgorithm):
         self.searchQueryGBox.setVisible(True)
         self.selectModelBtn.setEnabled(True)
         self.visualizeBtn.setEnabled(True)
-        # self.tsnePCABtn.setEnabled(True)
-        # self.tsneTSVDBtn.setEnabled(True)
-        # self.tsvdBtn.setEnabled(True)
         self.clearBtn.setEnabled(True)
         self.visualizeLogTextEdit.append('График алгоритма {0} отображен'.format(nameAlgorithm))
 
@@ -139,48 +122,42 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         for i, word in enumerate(words):
             ax.annotate(word, xy=(result[i, 0], result[i, 1]))
 
-    def visualiseTSNEPCA(self):
+    def visualizeWithAlgorithm(self):
         self.beforeVisualize()  
         X = self.calculator.model.wv[self.calculator.model.wv.vocab]
-        result = pca_tsne_algorithm(X)
-        self.drawPlot(result)                
-        self.afterVisualize("t-SNE со снижением размерности методом PCA")
+        algorithm_str = ""
+        result = ""
+        searchResultsOnly = self.searchOnlyCheck.isChecked() # отобразить только результаты поиска
+        if(self.pcaTSNERadioBtn.isChecked()):
+            result = pca_tsne_algorithm(X)
+            algorithm_str = "t-SNE со снижением размерности методом PCA"
+        elif(self.tsvdTSNERadioBtn.isChecked()):
+            result = tsvd_tsne_algorithms(X)
+            algorithm_str = "t-SNE со снижением размерности методом truncated SVD"
+        elif(self.tsvdRadioBtn.isChecked()):
+            result = lsa_algorithm(X, 2)
+            algorithm_str = "truncated SVD"
+        elif(self.pcaRadioBtn.isChecked()):
+            result = pca_algorithm(X, 2)
+            algorithm_str = "PCA"
+        
+        if(result != ""):
+            self.drawPlot(result)     
+            self.afterVisualize(algorithm_str)
+        else:
+            self.visualizeLogTextEdit.append('Алгоритм отображения не выбран.')
 
-    def visualisePCA(self):
-        self.beforeVisualize()  
-        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
-        result = pca_algorithm(X, 2)
-        self.drawPlot(result)                
-        self.afterVisualize("PCA")
-    
-    def visualiseTSNELSA(self):
-        self.beforeVisualize()  
-        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
-        result = tsvd_tsne_algorithms(X)
-        self.drawPlot(result)                
-        self.afterVisualize("t-SNE со снижением размерности методом truncated SVD")
-    
-    def visualiseLSA(self):
-        self.beforeVisualize()  
-        X = self.calculator.model.wv[self.calculator.model.wv.vocab]
-        result = lsa_algorithm(X, 2)
-        self.drawPlot(result)                
-        self.afterVisualize("truncated SVD")
-    
     # Очистка области визуализации.
     def clear_plots_layout(self):
         self.makePlot.removePlot()
 
     def on_calculation_finish(self):
         self.setEnabled(True)
-
         self.createLogTextEdit.append(
             'Выполнено за ' + self.profiler.stop() + ' с.')
-        
         QApplication.restoreOverrideCursor()
         # self.createModelBtn.setEnabled(True)
         self.recreateModelBtn.setVisible(True) # TODO: Показать кнопку повтора расчетов
-
         self._log_output_data()
         self.set_enable_visualisation(self.modelFile)
         QMessageBox.information(self, "Внимание", "Создание модели завершено")
@@ -220,24 +197,80 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
             self.visualizeLogTextEdit.clear()
             self.set_enable_visualisation(modelFile)
 
+    def show_word_on_plot(self):
+        word = self.searchQueryField.text().strip()
+        # self.searchedResult
+        # ["({0} - {1})".format(tpl[0], tpl[1]) for tpl in results]
+        self.visualizeLogTextEdit.append("Визуализация для слова {0}".format(word))
+        # arrays = np.empty((0, 300), dtype='f')
+        # word_labels = [word]
+        # color_list  = ['red']
+        # # adds the vector of the query word
+        # arrays = np.append(arrays, model.wv.__getitem__([word]), axis=0)
+        # # gets list of most similar words
+        # close_words = model.wv.most_similar([word])
+        # # adds the vector for each of the closest words to the array
+        # for wrd_score in close_words:
+        #     wrd_vector = model.wv.__getitem__([wrd_score[0]])
+        #     word_labels.append(wrd_score[0])
+        #     color_list.append('blue')
+        #     arrays = np.append(arrays, wrd_vector, axis=0)
+        # # adds the vector for each of the words from list_names to the array
+        # for wrd in list_names:
+        #     wrd_vector = model.wv.__getitem__([wrd])
+        #     word_labels.append(wrd)
+        #     color_list.append('green')
+        #     arrays = np.append(arrays, wrd_vector, axis=0)
+        # # Reduces the dimensionality from 300 to 50 dimensions with PCA
+        # reduc = PCA(n_components=50).fit_transform(arrays)
+        # # Finds t-SNE coordinates for 2 dimensions
+        # np.set_printoptions(suppress=True)
+        # Y = TSNE(n_components=2, random_state=0, perplexity=15).fit_transform(reduc)
+        # df = pd.DataFrame({'x': [x for x in Y[:, 0]],
+        #                 'y': [y for y in Y[:, 1]],
+        #                 'words': word_labels,
+        #                 'color': color_list})
+        # fig, _ = plt.subplots()
+        # fig.set_size_inches(9, 9)
+        # p1 = sns.regplot(data=df,
+        #                 x="x",
+        #                 y="y",
+        #                 fit_reg=False,
+        #                 marker="o",
+        #                 scatter_kws={'s': 40,
+        #                             'facecolors': df['color']
+        #                             }
+        #                 )
+        # for line in range(0, df.shape[0]):
+        #     p1.text(df["x"][line],
+        #             df['y'][line],
+        #             '  ' + df["words"][line].title(),
+        #             horizontalalignment='left',
+        #             verticalalignment='bottom', size='medium',
+        #             color=df['color'][line],
+        #             weight='normal'
+        #             ).set_size(15)
+        # plt.xlim(Y[:, 0].min()-50, Y[:, 0].max()+50)
+        # plt.ylim(Y[:, 1].min()-50, Y[:, 1].max()+50)
+        # plt.title('t-SNE visualization for {}'.format(word.title()))
+
     def search_word(self):
         word = self.searchQueryField.text().strip()
-
         if word == '' or word is None:
             return
         word = self.morph.parse(word)[0].normal_form
         topNParam = self.topNField.value() if self.topNField.value() != '' else 15
         self.visualizeLogTextEdit.append("Приведение слова к нормальной форме: " + word)
         try:
-            result = self.calculator.search_word(word.lower(), topNParam)
+            self.searchedResult = self.calculator.search_word(word.lower(), topNParam)
             self.visualizeLogTextEdit.append("Поиск слова...")
-            self._display_results(word, result)
+            self._display_results(word, self.searchedResult, topNParam)
         except:
             error_text = 'Слово {0} не содержится в словаре'.format(word)
             self.visualizeLogTextEdit.append(error_text)
 
-    def _display_results(self, word, results):
-        self.visualizeLogTextEdit.append("Слово {0} употребляется со следующими словами:".format(word))
+    def _display_results(self, word, results, topNParam):
+        self.visualizeLogTextEdit.append("Слово {0} употребляется со следующими {1} словами:".format(word, topNParam))
         self.visualizeLogTextEdit.append(';'.join(["({0} - {1})".format(tpl[0], tpl[1]) for tpl in results]))
 
     def _log_output_data(self):
@@ -272,8 +305,5 @@ class DialogWord2VecMaker(QDialog, DialogWord2Vec):
         self.visualizeLogTextEdit.append('Модель выбрана')
         self.calculator = Word2VecCalculator(modelFile, self.morph, self.configurations)
         self.visualizeBtn.setEnabled(True) # Делаем доступными элементы после выбора модели
-        # self.tsnePCABtn.setEnabled(True) # Делаем доступными элементы после выбора модели
-        # self.tsneTSVDBtn.setEnabled(True) # Делаем доступными элементы после выбора модели
-        # self.tsvdBtn.setEnabled(True) # Делаем доступными элементы после выбора модели
         self.searchQueryGBox.setEnabled(True) # Делаем доступными элементы после выбора модели
         self.plotVLayout.setEnabled(True) # Делаем доступными элементы после выбора модели
