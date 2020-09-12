@@ -37,7 +37,7 @@ def loadInputFilesFromList(input_files_list):
     texts = []
     for filename in input_files_list:
         text_data = TextData(filename)
-        text_data.original_sentences = readSentencesFromInputText(filename)
+        text_data.original_sentences = readSentencesFromInputText(filename, input_dir_name)
         texts.append(text_data)
 
     return texts
@@ -52,7 +52,7 @@ def loadInputFiles(input_dir_name):
     texts = []
     for filename in input_filenames:
         text_data = TextData(filename)
-        text_data.original_sentences = readSentencesFromInputText(filename, input_dir_name)
+        text_data.original_sentences = readSentencesFromInputText(filename, None)
         texts.append(text_data)
 
     return texts
@@ -163,15 +163,12 @@ def wordSurnameDetector(word, results):
 
 # Удаляет СТОП-СЛОВа (Предлоги, союзы и тд.)
 def removeStopWordsFromSentences(sentences, morph, configurations):
-
     minimal_word_size = configurations.get("minimal_word_size", 3)
     cut_ADJ = configurations.get("cut_ADJ", False)
     for sentence in sentences:
         i = 0
-
         while i < len(sentence):
             current_word = sentence[i]
-
             if len(current_word) < minimal_word_size or current_word.isalpha() == False:
                  sentence.pop(i)
                  i = i - 1
