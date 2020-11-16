@@ -25,6 +25,7 @@ from sklearn.preprocessing import Normalizer
 from sources.TextPreprocessing import writeStringToFile, makePreprocessing, makeFakePreprocessing, \
     getCompiledFromSentencesText
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sources.classification.clsf_util import *
 
 
 # Сигналы для потока вычисления
@@ -106,6 +107,40 @@ class ClasteringCalculator(QThread):
         self.signals.UpdateProgressBar.emit(100)
         self.signals.Finished.emit()
 
+    '''
+    Рассчет матрицы tf*idf с использованием формулы Wij/||Wij||
+    '''
+    def calculate_and_write_tf_idf_formula(self, out_filename, input_texts):
+        tf_idf_matrix, feature_names = makeTFIDF(input_texts, input_texts)
+
+        matrix_output_s = 'Слово'
+        for filename in self.short_filenames:
+            matrix_output_s += (';' + filename)
+        matrix_output_s += ('; Сумма')
+        matrix_output_s += '\n'
+        tf_idf_matrix = np.transpose(np.array(tf_idf_matrix))
+        total = []
+        for row in range(tf_idf_matrix.shape[0]):
+            current_total = np.sum(tf_idf_matrix[row])
+            total.append((current_total, tf_idf_matrix[row], feature_names[row]))
+
+        total.sort(key=lambda tup: tup[0], reverse=True)
+
+        for row in range(len(total)):
+            current_total = total[row]
+            current_row = current_total[1]
+            current_feature_name = current_total[2]
+            matrix_output_s += current_feature_name
+            for cell in range(current_row.shape[0]):
+                matrix_output_s += ('; ' + str(current_row[cell]))
+            matrix_output_s += ('; ' + str(current_total[0]))
+            matrix_output_s += '\n'
+        matrix_output_s = matrix_output_s.replace('.', ',')
+        writeStringToFile(matrix_output_s, out_filename)
+        result_msg = "Матрица TF-IDF записана: " + out_filename
+
+        return result_msg
+
     # Рассчет и запись матрицы TF-IDF
     def calculate_and_write_tf_idf(self, out_filename, input_texts):
         idf_vectorizer = TfidfVectorizer()
@@ -166,7 +201,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
         vectorizer = CountVectorizer()
