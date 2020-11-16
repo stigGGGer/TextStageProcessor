@@ -52,6 +52,7 @@ class ClasteringCalculator(QThread):
 
         self.need_preprocessing = False
         self.need_tf_idf = True
+        self.need_tf_idf_formula = False
         self.first_call = True
         self.texts = []
 
@@ -201,6 +202,12 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+        
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
             msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
@@ -248,6 +255,12 @@ class ClasteringCalculator(QThread):
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
             msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
         vectorizer = CountVectorizer()
@@ -299,6 +312,12 @@ class ClasteringCalculator(QThread):
             msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+
         vectorizer = CountVectorizer()
         X = vectorizer.fit_transform(input_texts)
 
@@ -335,6 +354,12 @@ class ClasteringCalculator(QThread):
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
             msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
         vectorizer = CountVectorizer()
@@ -375,6 +400,12 @@ class ClasteringCalculator(QThread):
             msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+
         vectorizer = CountVectorizer()
         X = vectorizer.fit_transform(input_texts)
 
@@ -413,6 +444,12 @@ class ClasteringCalculator(QThread):
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
             msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
         vectorizer = CountVectorizer()
@@ -457,6 +494,12 @@ class ClasteringCalculator(QThread):
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
             msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            self.signals.PrintInfo.emit(msg)
+
+        if self.need_tf_idf_formula:
+            self.signals.PrintInfo.emit("Расчет TF-IDF по формуле на изображении...")
+            idf_filename = output_dir + 'tf_idf_formula.csv'
+            msg = self.calculate_and_write_tf_idf_formula(idf_filename, input_texts)
             self.signals.PrintInfo.emit(msg)
 
         vectorizer = CountVectorizer()

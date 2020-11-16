@@ -78,6 +78,7 @@ class DialogClastering(QDialog):
         self.addfig(plt.gcf())
         self.startMethod.setEnabled(True)
         self.checkBoxNeedCalculateTFIDF.setEnabled(True)
+        self.anotherFormulaCheck.setEnabled(True)
         QMessageBox.information(self, "Внимание", "Кластеризация завершена!")
 
     def OnStartMethod(self):
@@ -96,6 +97,9 @@ class DialogClastering(QDialog):
 
         self.calculator.need_tf_idf = self.checkBoxNeedCalculateTFIDF.isChecked()
         self.checkBoxNeedCalculateTFIDF.setEnabled(False)
+
+        self.calculator.need_tf_idf_formula = self.anotherFormulaCheck.isChecked() #необходимо ли рассчитать по другой формуле
+        self.anotherFormulaCheck.setEnabled(False)
 
         # Передает параметры с формы в процесс
         self.calculator.kmeans_cluster_count = self.kmeans_cluster_count.value()
