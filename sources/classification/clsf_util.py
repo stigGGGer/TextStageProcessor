@@ -174,9 +174,9 @@ def makeTFIDF(data_train, data_test = None):
         df_doc.append(all_words.count(word))
     df_doc = np.array(df_doc)
     
-    
+    data_tf = data_train
     if data_test:
-        data_tf = data_train + data_test
+        data_tf += data_test
     tf = []
     for doc in data_tf:
         tfi = []

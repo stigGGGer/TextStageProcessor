@@ -112,8 +112,10 @@ class ClasteringCalculator(QThread):
     Рассчет матрицы tf*idf с использованием формулы Wij/||Wij||
     '''
     def calculate_and_write_tf_idf_formula(self, out_filename, input_texts):
-        tf_idf_matrix, feature_names = makeTFIDF(input_texts, input_texts)
-
+        words_list = []
+        for text in input_texts:
+            words_list.append(text.split())
+        tf_idf_matrix, unique_words = makeTFIDF(words_list)
         matrix_output_s = 'Слово'
         for filename in self.short_filenames:
             matrix_output_s += (';' + filename)
@@ -123,7 +125,7 @@ class ClasteringCalculator(QThread):
         total = []
         for row in range(tf_idf_matrix.shape[0]):
             current_total = np.sum(tf_idf_matrix[row])
-            total.append((current_total, tf_idf_matrix[row], feature_names[row]))
+            total.append((current_total, tf_idf_matrix[row], unique_words[row]))
 
         total.sort(key=lambda tup: tup[0], reverse=True)
 
@@ -136,7 +138,6 @@ class ClasteringCalculator(QThread):
                 matrix_output_s += ('; ' + str(current_row[cell]))
             matrix_output_s += ('; ' + str(current_total[0]))
             matrix_output_s += '\n'
-        matrix_output_s = matrix_output_s.replace('.', ',')
         writeStringToFile(matrix_output_s, out_filename)
         result_msg = "Матрица TF-IDF записана: " + out_filename
 
