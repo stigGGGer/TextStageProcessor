@@ -124,7 +124,7 @@ class ClasteringCalculator(QThread):
         tf_idf_matrix = np.transpose(np.array(tf_idf_matrix))
         total = []
         for row in range(tf_idf_matrix.shape[0]):
-            current_total = np.sum(tf_idf_matrix[row])
+            current_total = np.sum(tf_idf_matrix[row]).round(4)
             total.append((current_total, tf_idf_matrix[row], unique_words[row]))
 
         total.sort(key=lambda tup: tup[0], reverse=True)
