@@ -52,6 +52,9 @@ class ClasteringCalculator(QThread):
 
         self.need_preprocessing = False
         self.need_tf_idf = True
+        self.tf_idf_norm = "l2"
+        self.tf_idf_is_smooth_idf = False
+        self.tf_idf_sublinear_tf = False
         self.need_tf_idf_formula = False
         self.first_call = True
         self.texts = []
@@ -203,7 +206,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
         
         if self.need_tf_idf_formula:
@@ -255,7 +258,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
 
         if self.need_tf_idf_formula:
@@ -310,7 +313,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
 
         if self.need_tf_idf_formula:
@@ -354,7 +357,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
 
         if self.need_tf_idf_formula:
@@ -398,7 +401,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
 
         if self.need_tf_idf_formula:
@@ -444,7 +447,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
 
         if self.need_tf_idf_formula:
@@ -494,7 +497,7 @@ class ClasteringCalculator(QThread):
         if self.need_tf_idf:
             self.signals.PrintInfo.emit("Расчет TF-IDF...")
             idf_filename = output_dir + 'tf_idf.csv'
-            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts)
+            msg = self.calculate_and_write_tf_idf(idf_filename, input_texts, self.tf_idf_norm, self.tf_idf_is_smooth_idf, self.tf_idf_sublinear_tf)
             self.signals.PrintInfo.emit(msg)
 
         if self.need_tf_idf_formula:

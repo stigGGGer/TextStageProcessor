@@ -102,6 +102,11 @@ class DialogClastering(QDialog):
         self.checkBoxNeedCalculateTFIDF.setEnabled(False)
         self.tfIdfLibParamsWidget.setEnabled(False)
 
+        if (self.calculator.need_tf_idf):
+            self.calculator.tf_idf_norm = "l2" if self.normValue.value() == 0 else "l1"
+            self.calculator.tf_idf_is_smooth_idf = self.isSmoothIdfValue.value() == 1
+            self.calculator.tf_idf_sublinear_tf = self.isSublinearTfValue.value() == 1
+
         self.calculator.need_tf_idf_formula = self.anotherFormulaCheck.isChecked() #необходимо ли рассчитать по другой формуле
         self.anotherFormulaCheck.setEnabled(False)
 
