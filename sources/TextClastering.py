@@ -49,6 +49,8 @@ class DialogClastering(QDialog):
 
         output_dir = self.configurations.get("output_files_directory", "output_files")
 
+        self.tfIdfLibParamsWidget.setEnabled(self.checkBoxNeedCalculateTFIDF.isChecked())
+
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.startMethod.clicked.connect(self.OnStartMethod)
 
@@ -78,6 +80,7 @@ class DialogClastering(QDialog):
         self.addfig(plt.gcf())
         self.startMethod.setEnabled(True)
         self.checkBoxNeedCalculateTFIDF.setEnabled(True)
+        self.tfIdfLibParamsWidget.setEnabled(self.checkBoxNeedCalculateTFIDF.isChecked())
         self.anotherFormulaCheck.setEnabled(True)
         QMessageBox.information(self, "Внимание", "Кластеризация завершена!")
 
@@ -97,6 +100,7 @@ class DialogClastering(QDialog):
 
         self.calculator.need_tf_idf = self.checkBoxNeedCalculateTFIDF.isChecked()
         self.checkBoxNeedCalculateTFIDF.setEnabled(False)
+        self.tfIdfLibParamsWidget.setEnabled(False)
 
         self.calculator.need_tf_idf_formula = self.anotherFormulaCheck.isChecked() #необходимо ли рассчитать по другой формуле
         self.anotherFormulaCheck.setEnabled(False)
