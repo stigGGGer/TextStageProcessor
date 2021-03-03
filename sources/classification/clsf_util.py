@@ -164,7 +164,7 @@ def normVec(nparray):
 def makeTFIDF(data_train, data_test = None):
     words_in_doc = []
     for doc in data_train:
-        words_in_doc.append(list(doc))
+        words_in_doc.append(list(set(doc)))
     
     all_words = sum(words_in_doc, [])
     uniq_words = list(set(all_words))
