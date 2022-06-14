@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QFileDialog
 from sources.TextPreprocessing import loadInputFilesFromList, tokenizeTextData, removeStopWordsInTexts, \
     calculateWordsFrequencyInTexts, fixRegisterInTexts, normalizeTexts, writeStringToFile
 
+
 def readConfigurationFile(filename):
     with codecs.open(filename, 'r', "utf-8") as text_file:
         data = text_file.read()
@@ -18,25 +19,29 @@ def readConfigurationFile(filename):
         result = dict()
         for line in lines:
             line = line.strip()
-            if(line.startswith("#") == False):
+            if (line.startswith("#") == False):
                 keyvalue = line.split("=")
-                if(len(keyvalue) == 2):
-                    result[keyvalue[0]]=keyvalue[1]
+                if (len(keyvalue) == 2):
+                    result[keyvalue[0]] = keyvalue[1]
         return result
 
-def getFilenameFromUserSelection(file_types="Any Files (*.*)", path = ''):
+
+def getFilenameFromUserSelection(file_types="Any Files (*.*)", path=''):
     filenames, _ = QFileDialog.getOpenFileName(None, "Выбрать файл", path, file_types, None)
     if (len(filenames) > 0):
         return filenames
     else:
         return None
 
-def getFilenamesFromUserSelection(path = '', extensions: str = None):
-    filenames, _ = QFileDialog.getOpenFileNames(None, "Выбрать файлы", path, "Text Files (*.txt);;{0}".format(extensions if not extensions == None else ''), None)
+
+def getFilenamesFromUserSelection(path='', extensions: str = None):
+    filenames, _ = QFileDialog.getOpenFileNames(None, "Выбрать файлы", path, "Text Files (*.txt);;{0}".format(
+        extensions if not extensions == None else ''), None)
     if (len(filenames) > 0):
         return filenames
     else:
         return None
+
 
 def getDirFromUserSelection(path):
     dir_name = QFileDialog.getExistingDirectory(None, "Выбрать каталог", path)
@@ -50,14 +55,15 @@ def getDirFromUserSelection(path):
 # в вид: files/file.txt
 def make_relative_files_path(filename, root_folder):
     folder = root_folder
-    if(len(root_folder)>0 and root_folder[-1] == '/'):
+    if (len(root_folder) > 0 and root_folder[-1] == '/'):
         folder = root_folder[:-1]
     start_position = folder.rfind('/')
-    if(start_position == -1):
+    if (start_position == -1):
         start_position = 0
     if len(filename) > 0 and filename[0] == '/':
         start_position += 1
     return filename[start_position:]
+
 
 def clear_dir(path):
     for name in os.listdir(path):
@@ -72,12 +78,16 @@ def makePreprocessingForAllFilesInFolder(configurations,
                                          input_dir_name,
                                          output_files_dir,
                                          output_log_dir, morph):
-
     input_filenames_with_dir = []
+
+    not_a_folder = input_dir_name + '.DS_Store'
+    if os.path.exists(not_a_folder):
+        os.remove(not_a_folder)
 
     for top, dirs, files in os.walk(input_dir_name):
         for nm in files:
-            input_filenames_with_dir.append(os.path.join(top, nm))
+            if nm != '.DS_Store':
+                input_filenames_with_dir.append(os.path.join(top, nm))
 
     # Загружаем предложения из нескольких файлов
     texts = loadInputFilesFromList(input_filenames_with_dir)
