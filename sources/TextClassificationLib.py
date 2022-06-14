@@ -66,6 +66,13 @@ class DialogClassificationLib(QDialog):
         self.calculator.linear_svm_c = self.linear_svm_c.value()
         self.calculator.rbf_svm_c = self.rbf_svm_c.value()
 
+        self.calculator.neural_alpha = self.neural_alpha.value()
+        self.calculator.neural_solver = self.neural_solver.currentText()
+        self.calculator.neurons_count = self.neurons_count.value()
+
+###
+
+
         self.calculator.need_preprocessing = self.checkBoxNeedPreprocessing.isChecked()
         self.calculator.method_index = self.tabWidget.currentIndex()
         self.profiler.start()

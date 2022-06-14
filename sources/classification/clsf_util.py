@@ -19,6 +19,11 @@ def makeFileList(root_path = 'input_files/classification/', fread = True, fproce
     if len(root_path)>0 and root_path[-1] != '/':
         train_folder = '/' + train_folder
     path_train = root_path + train_folder
+
+    not_a_folder = path_train + '.DS_Store'
+    if os.path.exists(not_a_folder):
+        os.remove(not_a_folder)
+
     folders = [path_train + folder + '/' for folder in os.listdir(path_train)]
     class_titles = os.listdir(path_train)
 
@@ -36,6 +41,10 @@ def makeFileList(root_path = 'input_files/classification/', fread = True, fproce
     for cl in class_titles:
          if not os.path.exists(path_test + cl):
             os.makedirs(path_test + cl)
+
+    not_a_folder = path_test + '.DS_Store'
+    if os.path.exists(not_a_folder):
+        os.remove(not_a_folder)
 
     folders = [path_test + folder + '/' for folder in os.listdir(path_test)]
     files_tst = []
@@ -63,6 +72,15 @@ def makeFileListLib(root_path = 'input_files/classification/', fread = True, fpr
     if len(root_path)>0 and root_path[-1] != '/':
         train_folder = '/' + train_folder
     path_train = root_path + train_folder
+
+    not_a_folder = root_path + '.DS_Store'
+    if os.path.exists(not_a_folder):
+        os.remove(not_a_folder)
+
+    not_a_folder = path_train+'.DS_Store'
+    if os.path.exists(not_a_folder):
+        os.remove(not_a_folder)
+
     folders = [path_train + folder + '/' for folder in os.listdir(path_train)]
     class_titles = os.listdir(path_train)
 
@@ -77,9 +95,15 @@ def makeFileListLib(root_path = 'input_files/classification/', fread = True, fpr
         test_folder = '/' + test_folder
     path_test = root_path + test_folder
 
+    not_a_folder = path_test + '.DS_Store'
+    if os.path.exists(not_a_folder):
+        os.remove(not_a_folder)
+
     for cl in class_titles:
          if not os.path.exists(path_test + cl):
             os.makedirs(path_test + cl)
+
+
 
     folders = [path_test + folder + '/' for folder in os.listdir(path_test)]
     files_tst = []

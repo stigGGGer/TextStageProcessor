@@ -15,10 +15,12 @@ from sklearn.feature_extraction.text import CountVectorizer, HashingVectorizer
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
 
 from sources.TextPreprocessing import writeStringToFile
 from sources.classification.clsf_util import makeFileListLib
 from sources.utils import makePreprocessingForAllFilesInFolder, clear_dir
+
 
 class ClassificationLibCalculatorSignals(QObject):
     PrintInfo = pyqtSignal(str)
@@ -35,7 +37,7 @@ class ClassificationLibCalculator(QThread):
 
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        #clear_dir(self.output_dir)
+        # clear_dir(self.output_dir)
 
         self.output_preprocessing_dir = self.output_dir + 'preprocessing/'
         self.first_call = True
@@ -79,8 +81,6 @@ class ClassificationLibCalculator(QThread):
 
         self.signals.UpdateProgressBar.emit(30)
 
-
-
         if self.need_preprocessing:
             self.method_input_dir = self.output_preprocessing_dir + self.input_dir_short + '/'
         else:
@@ -111,14 +111,18 @@ class ClassificationLibCalculator(QThread):
         if self.method_index == 3:
             self.classification_gaussian_nb()
 
+        if self.method_index == 4:
+            self.classification_neural()
+
         if self.first_call and self.need_preprocessing:
             self.first_call = False
         self.signals.UpdateProgressBar.emit(100)
         self.signals.PrintInfo.emit('Рассчеты закончены!')
         self.signals.Finished.emit()
 
-
     def compile_result_string(self, results, proba, classes, filenames):
+        accuracy = 0
+        counter = 0
         result_s = ''
         result_s += "Результаты классификации:\n"
         result_s += "----------------------------------------------------------------------------\n"
@@ -126,6 +130,14 @@ class ClassificationLibCalculator(QThread):
             result_s += "Файл: " + self.test_filenames[index] + '\n'
             result_s += "Класс: " + str(result) + '\n'
             result_s += "----------------------------------------------------------------------------\n"
+            counter = counter + 1
+            filename = self.test_filenames[index].lower()
+            classname = str(result).lower()
+            if filename.startswith(classname):
+                accuracy = accuracy + 1
+        accuracy = accuracy / counter
+        accuracy = int(accuracy * 100) / 100
+        result_s += "Точность: " + str(accuracy) + '\n'
         return result_s
 
     def write_results_to_file(self, output_filename, results, proba, classes, filenames):
@@ -140,7 +152,6 @@ class ClassificationLibCalculator(QThread):
                 result_s += ";" + str(cl) + ';' + str(proba[index][cl_index]) + "\n"
             result_s += "\n"
         writeStringToFile(result_s, output_filename)
-
 
     def classification_knn(self):
         self.signals.PrintInfo.emit("Алгоритм KNN")
@@ -161,11 +172,10 @@ class ClassificationLibCalculator(QThread):
         results = classificator.predict(testSet)
         proba = classificator.predict_proba(testSet)
 
-        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_, self.test_filenames)
+        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,
+                                   self.test_filenames)
         out_text = self.compile_result_string(results, proba, classificator.classes_, self.test_filenames)
         self.signals.PrintInfo.emit(out_text)
-
-
 
     def classification_linear_svm(self):
         self.signals.PrintInfo.emit("Алгоритм Linear SVM")
@@ -183,10 +193,10 @@ class ClassificationLibCalculator(QThread):
         results = classificator.predict(testSet)
         proba = classificator.predict_proba(testSet)
 
-        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_, self.test_filenames)
+        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,
+                                   self.test_filenames)
         out_text = self.compile_result_string(results, proba, classificator.classes_, self.test_filenames)
         self.signals.PrintInfo.emit(out_text)
-
 
     def classification_rbf_svm(self):
         self.signals.PrintInfo.emit("RBF SVM")
@@ -204,10 +214,10 @@ class ClassificationLibCalculator(QThread):
         results = classificator.predict(testSet)
         proba = classificator.predict_proba(testSet)
 
-        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,self.test_filenames)
+        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,
+                                   self.test_filenames)
         out_text = self.compile_result_string(results, proba, classificator.classes_, self.test_filenames)
         self.signals.PrintInfo.emit(out_text)
-
 
     def classification_gaussian_nb(self):
         self.signals.PrintInfo.emit("Gaussian NB")
@@ -225,6 +235,33 @@ class ClassificationLibCalculator(QThread):
         results = classificator.predict(testSet.toarray())
         proba = classificator.predict_proba(testSet.toarray())
 
-        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,self.test_filenames)
+        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,
+                                   self.test_filenames)
+        out_text = self.compile_result_string(results, proba, classificator.classes_, self.test_filenames)
+        self.signals.PrintInfo.emit(out_text)
+
+    def classification_neural(self):
+        self.signals.PrintInfo.emit("Алгоритм Neural")
+        output_dir = self.output_dir + 'neural_out/'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        vectorizer = HashingVectorizer()
+        fdata = vectorizer.fit_transform(self.fdata)
+        trainingSet = fdata[:self.split]
+        testSet = fdata[self.split:]
+
+        # Создаем и тренируем классификатор а затем классифицируем
+        neurons_count = self.neurons_count
+        hidden_layer_sizes = (neurons_count,)
+        classificator = MLPClassifier(solver=self.neural_solver, alpha=self.neural_alpha,
+                                    hidden_layer_sizes=hidden_layer_sizes)
+
+        classificator.fit(trainingSet, self.trainingClass)
+        results = classificator.predict(testSet)
+        proba = classificator.predict_proba(testSet)
+
+        self.write_results_to_file(output_dir + 'results.csv', results, proba, classificator.classes_,
+                                   self.test_filenames)
         out_text = self.compile_result_string(results, proba, classificator.classes_, self.test_filenames)
         self.signals.PrintInfo.emit(out_text)
